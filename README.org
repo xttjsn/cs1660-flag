@@ -1,0 +1,48 @@
+* Summary
+This is the readme file for FLAG.
+
+* Distinct Vulnerabilities [6/20]
+
+** DONE CSRF
+** Cross-Site Data Access
+
+** DONE Stored XSS
+
+** TODO Reflected XSS
+
+** TODO DOM-Based XSS
+
+** TODO UI Redress
+
+** TODO Cookie Injection
+
+** TODO Client-Side HTTP Parameter Pollution
+
+** DONE SQL Injection
+
+** OS Command Injection
+
+** DONE File Upload
+
+** TODO File Inclusion
+
+** DONE Path Sanitation Bypass
+
+** TODO Client-Only Input Validation
+
+** TODO Client-Hidden Sensitive Data
+
+** TODO Insecure Direct Object Reference
+
+** TODO Parameter-Based Access Control
+
+** TODO Referrer-Based Access Control
+
+** TODO Multi-Stage Functions with only some pages authenticated
+
+** TODO Session Cookie Prediction
+
+** DONE Session Fixation
+
+** TODO Bad Password Hashing
+

