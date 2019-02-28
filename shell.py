@@ -145,7 +145,7 @@ xhr.send(null);
     def do_sql_injection(self, arg):
         """SQL Injection
         """
-        subprocess.Popen(["firefox", "/home/xttjsn/Dropbox/Brown/Course/1660/projects/flag/sql_injection.html"])
+        subprocess.Popen(["firefox", "./sql_injection.html"])
 
     def do_fileupload(self, arg):
         """Exploit file upload for shell access!
