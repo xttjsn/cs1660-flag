@@ -117,9 +117,9 @@ func counter(out <-chan bool) {
 }
 
 func test() {
-	target := "e104c0d7a3e52debe96da921ceb8c85fecde7a45"
+	target := "00f909787ab4a4657ef4e6a46d7b291acfa2870c"
 
-	h := hashpwd("iamtxiaotin")
+	h := hashpwd("roberto12345")
 	if h != target {
 		fmt.Printf("Wrong hash function, rewrite it! %v", h)
 	} else {
