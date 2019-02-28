@@ -3,7 +3,7 @@ import subprocess
 import os
 import string
 import random
-import itertools
+import threading
 import tornado
 import tornado.web
 from threading import Thread
@@ -135,7 +135,12 @@ xhr.send(null);
 
         subprocess.Popen(['firefox', '--new-tab', 'http://localhost:8090'])
         ws = WebServer(html, port)
-        ws.run()
+
+        def run():
+            ws.run()
+
+        t = threading.Thread(target=run)
+        t.start()
 
     def do_sql_injection(self, arg):
         """SQL Injection
