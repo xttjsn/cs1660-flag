@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 IP = '35.186.175.202'
 PASSWORD = 'strong-sunfish-from-mars'
-
+victim_name = ''
 
 def randomName():
     if not os.path.exists('./tmp'):
@@ -86,6 +86,7 @@ class FlagShell(Cmd):
         """Login as victim
         """
         subprocess.Popen(["firefox", "--new-tab", IP])
+        victim_name = arg
 
     def do_csrf(self, arg):
         """Cross-Site Request Forgery
